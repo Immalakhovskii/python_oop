@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
@@ -117,19 +120,13 @@ class Swimming(Training):
 
 
 def read_package(workout_type: str, data: list) -> Training:
-    """Прочитать данные полученные от датчиков."""
-    if workout_type == 'SWM':
-        return Swimming(action=data[0], duration=data[1],
-                        weight=data[2], length_pool=data[3],
-                        count_pool=data[4])
-    elif workout_type == 'RUN':
-        return Running(action=data[0], duration=data[1],
-                       weight=data[2])
-    elif workout_type == 'WLK':
-        return SportsWalking(action=data[0], duration=data[1],
-                             weight=data[2], height=data[3])
-    else:
-        return None
+    """Прочитать данные, полученные от датчиков."""
+    training_dict: dict = {
+        'SWM': Swimming,
+        'RUN': Running,
+        'WLK': SportsWalking
+    }
+    return training_dict[workout_type](*data)
 
 
 def main(training: Training) -> None:
@@ -139,7 +136,7 @@ def main(training: Training) -> None:
 
 
 if __name__ == '__main__':
-    packages = [
+    packages: tuple = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
         ('WLK', [9000, 1, 75, 180])
