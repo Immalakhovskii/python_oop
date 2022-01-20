@@ -100,9 +100,7 @@ def read_package(workout_type: str, data: List) -> Training:
         'RUN': Running,
         'WLK': SportsWalking
     }
-    if (workout_type == 'SWM'
-       or workout_type == 'RUN'
-       or workout_type == 'WLK'):
+    if workout_type in training_dict:
         return training_dict[workout_type](*data)
     else:
         raise ValueError('Переданы некорректные данные')
