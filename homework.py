@@ -4,24 +4,24 @@ from typing import ClassVar, Dict, List
 
 @dataclass
 class InfoMessage:
-    """Информационное сообщение о тренировке."""
-    training_type: str
+    """Class for info message on workout."""
+    workout_type: str
     duration: float
     distance: float
     speed: float
     calories: float
 
     def get_message(self) -> str:
-        return (f'Тип тренировки: {self.training_type}; '
-                f'Длительность: {"{:.3f}".format(self.duration)} ч.; '
-                f'Дистанция: {"{:.3f}".format(self.distance)} км; '
-                f'Ср. скорость: {"{:.3f}".format(self.speed)} км/ч; '
-                f'Потрачено ккал: {"{:.3f}".format(self.calories)}.')
+        return (f'Workout: {self.workout_type}; '
+                f'Duration: {self.duration: .3f} h.; '
+                f'Distance: {"{:.3f}".format(self.distance)} km; '
+                f'Average speed: {"{:.3f}".format(self.speed)} km/h; '
+                f'Kcal spent: {"{:.3f}".format(self.calories)}.')
 
 
 @dataclass
-class Training:
-    """Базовый класс тренировки."""
+class Workout:
+    """Basic workout class."""
     action: int
     duration: float
     weight: float
@@ -30,28 +30,29 @@ class Training:
     MINUTES_IN_HOUR: ClassVar[int] = 60
 
     def get_distance(self) -> float:
-        """Получить дистанцию в км."""
+        """Get distance in km."""
         return self.action * self.LEN_STEP / self.M_IN_KM
 
     def get_mean_speed(self) -> float:
-        """Получить среднюю скорость движения."""
+        """Get average speed."""
         return self.get_distance() / self.duration
 
     def get_spent_calories(self) -> float:
-        """Получить количество затраченных калорий."""
-        raise NotImplementedError('Метод работает только в наследниках'
-                                  ' класса Training')
+        """Get kcal spent."""
+        raise NotImplementedError(
+            'Method operates only in Workouts class inheritors'
+        )
 
-    def show_training_info(self) -> InfoMessage:
-        """Вернуть информационное сообщение о выполненной тренировке."""
+    def show_workout_info(self) -> InfoMessage:
+        """Get info message on finished workout."""
         return InfoMessage(type(self).__name__, self.duration,
                            self.get_distance(), self.get_mean_speed(),
                            self.get_spent_calories())
 
 
 @dataclass
-class Running(Training):
-    """Тренировка: бег."""
+class Running(Workout):
+    """Workout: Running."""
     COEFF_CALORIE_RUN1: ClassVar[int] = 18
     COEFF_CALORIE_RUN2: ClassVar[int] = 20
 
@@ -62,8 +63,8 @@ class Running(Training):
 
 
 @dataclass
-class SportsWalking(Training):
-    """Тренировка: спортивная ходьба."""
+class SportsWalking(Workout):
+    """Workout: Racewalking."""
     height: float
     COEFF_CALORIE_WLK1: ClassVar[float] = 0.035
     COEFF_CALORIE_WLK2: ClassVar[float] = 0.029
@@ -76,8 +77,8 @@ class SportsWalking(Training):
 
 
 @dataclass
-class Swimming(Training):
-    """Тренировка: плавание."""
+class Swimming(Workout):
+    """Workout: Swimming."""
     length_pool: float
     count_pool: float
     LEN_STEP: ClassVar[float] = 1.38
@@ -93,22 +94,22 @@ class Swimming(Training):
                 * self.COEFF_CALORIE_SWM2 * self.weight)
 
 
-def read_package(workout_type: str, data: List) -> Training:
-    """Прочитать данные, полученные от датчиков."""
-    training_dict: Dict = {
+def read_package(workout_type: str, data: List) -> Workout:
+    """Read data from sensors."""
+    workout_dict: Dict = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    if workout_type in training_dict:
-        return training_dict[workout_type](*data)
+    if workout_type in workout_dict:
+        return workout_dict[workout_type](*data)
     else:
-        raise ValueError('Переданы некорректные данные')
+        raise ValueError('Incorrect data passed')
 
 
-def main(training: Training) -> None:
-    """Основная функция."""
-    info: InfoMessage = training.show_training_info()
+def main(workout: Workout) -> None:
+    """Main function."""
+    info: InfoMessage = workout.show_workout_info()
     print(info.get_message())
 
 
@@ -120,5 +121,5 @@ if __name__ == '__main__':
     ]
 
     for workout_type, data in packages:
-        training = read_package(workout_type, data)
-        main(training)
+        workout = read_package(workout_type, data)
+        main(workout)
